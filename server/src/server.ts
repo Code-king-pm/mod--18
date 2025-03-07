@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import db from './config/connection.js';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -47,6 +48,9 @@ const startApolloServer = async () => {
     next();
   });
 
+  // Serve static files from the React app
+  app.use(express.static(path.join(__dirname, '../../client/build')));
+
   // Apply the Apollo middleware with context
   app.use(
     '/graphql',
@@ -68,6 +72,11 @@ const startApolloServer = async () => {
       },
     })
   );
+
+  // Serve the React app for any other route
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(__dirname, '../../client/build/index.html'));
+  });
 
   // Start the server and listen on the specified port
   app.listen(PORT, () => {
