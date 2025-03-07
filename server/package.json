@@ -1,12 +1,12 @@
 {
-  "name": "googlebooks-app",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "build": "concurrently \"cd server && npm run build\" \"cd client && npm run build\"",
-    "start": "concurrently \"cd server && npm start\" \"cd client && npm start\"",
+    "build": "tsc",
+    "start": "node dist/server.js",
     "watch": "nodemon dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
