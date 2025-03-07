@@ -1,7 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import path from 'path'; // Add path module
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import db from './config/connection.js';
 import { ApolloServer } from '@apollo/server';
@@ -15,6 +16,9 @@ interface Context {
   user?: any;
 }
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Create a new instance of an Apollo server with the GraphQL schema
 const server = new ApolloServer<Context>({
   typeDefs,
@@ -25,7 +29,7 @@ const startApolloServer = async () => {
   await server.start();
   await db;
 
-  const PORT = 4000; // Hardcode the port value here
+  const PORT = process.env.PORT || 3001; // Ensure the port is read from the environment variables
   const app = express();
 
   app.use(
