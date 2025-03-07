@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import path from 'path'; // Add path module
 
 import db from './config/connection.js';
 import { ApolloServer } from '@apollo/server';
@@ -41,6 +42,10 @@ const startApolloServer = async () => {
     res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' data:;");
     next();
   });
+
+  // Serve static files from the "public" directory
+  const publicDir = path.join(__dirname, 'public');
+  app.use(express.static(publicDir));
 
   app.use(
     '/graphql',
