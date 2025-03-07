@@ -1,8 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
+
 import db from './config/connection.js';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -43,13 +42,6 @@ const startApolloServer = async () => {
     next();
   });
 
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-
-  const buildDir = path.join(__dirname, '../../client/build');
-  console.log('Build directory:', buildDir);
-
-  app.use(express.static(buildDir));
 
   app.use(
     '/graphql',
@@ -71,10 +63,6 @@ const startApolloServer = async () => {
       },
     })
   );
-
-  app.get('*', (_req, res) => {
-    res.sendFile(path.join(buildDir, 'index.html'));
-  });
 
   app.listen(PORT, () => {
     console.log(`API server running on port ${PORT}!`);
