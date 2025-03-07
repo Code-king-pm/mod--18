@@ -42,7 +42,6 @@ const startApolloServer = async () => {
     next();
   });
 
-
   app.use(
     '/graphql',
     expressMiddleware(server, {
