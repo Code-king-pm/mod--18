@@ -30,7 +30,7 @@ const startApolloServer = async () => {
 
   app.use(
     cors({
-      origin: ['http://localhost:3000', 'https://mod-18-f69u.vercel.app'],
+      origin: ['http://localhost:3000', 'https://mod-18-f69u.vercel.app', 'https://mod-18-f69u-j6sf42if0-code-king-pms-projects.vercel.app'],
       credentials: true,
     })
   );
