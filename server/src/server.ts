@@ -2,7 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { fileURLToPath } from 'url'; // Import fileURLToPath from 'url'
+import { fileURLToPath } from 'url';
 import db from './config/connection.js';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -12,51 +12,45 @@ import { verifyToken } from './services/auth.js';
 
 // Define the Context interface
 interface Context {
-  user?: any; // Replace `any` with the correct type if available
+  user?: any;
 }
 
 // Create a new instance of an Apollo server with the GraphQL schema
 const server = new ApolloServer<Context>({
   typeDefs,
   resolvers,
-  // You can add other options here if needed (like introspection, playground etc.)
 });
 
 const startApolloServer = async () => {
-  // Start the Apollo server
   await server.start();
-  await db; // Ensure the database connection is established before proceeding
-  
-  const PORT = process.env.PORT || 3001; // Set the port
+  await db;
+
+  const PORT = process.env.PORT || 3001;
   const app = express();
 
-  // Enable CORS for all routes
   app.use(
     cors({
-      origin: 'http://localhost:3000', // Specify the allowed origin
-      credentials: true, // Allow credentials to be sent
+      origin: 'http://localhost:3000',
+      credentials: true,
     })
   );
 
-  // Middleware for parsing application/x-www-form-urlencoded
   app.use(express.urlencoded({ extended: false }));
-  // Middleware for parsing application/json
   app.use(express.json());
 
-  // Set Content Security Policy headers
   app.use((_req, res, next) => {
     res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' data:;");
     next();
   });
 
-  // Define __dirname for ES modules
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
 
-  // Serve static files from the React app
-  app.use(express.static(path.join(__dirname, '../../client/build')));
+  const buildDir = path.join(__dirname, '../../client/build');
+  console.log('Build directory:', buildDir);
 
-  // Apply the Apollo middleware with context
+  app.use(express.static(buildDir));
+
   app.use(
     '/graphql',
     expressMiddleware(server, {
@@ -65,32 +59,29 @@ const startApolloServer = async () => {
 
         if (token) {
           try {
-            const decoded = verifyToken(token.replace('Bearer ', '')); // Verify the JWT
-            const user = await User.findById(decoded._id); // Fetch the user from the database
-            return { user }; // Attach user to the context
+            const decoded = verifyToken(token.replace('Bearer ', ''));
+            const user = await User.findById(decoded._id);
+            return { user };
           } catch (err) {
             console.error('Error verifying token:', err);
           }
         }
-        
-        return { user: null }; // Default to null if authentication fails
+
+        return { user: null };
       },
     })
   );
 
-  // Serve the React app for any other route
   app.get('*', (_req, res) => {
-    res.sendFile(path.join(__dirname, '../../client/build/index.html'));
+    res.sendFile(path.join(buildDir, 'index.html'));
   });
 
-  // Start the server and listen on the specified port
   app.listen(PORT, () => {
     console.log(`API server running on port ${PORT}!`);
     console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
   });
 };
 
-// Call the function to start the server
 startApolloServer().catch(error => {
   console.error('Error starting the server:', error);
 });
