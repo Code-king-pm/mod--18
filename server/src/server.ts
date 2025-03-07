@@ -42,7 +42,7 @@ const startApolloServer = async () => {
   app.use(express.json());
 
   // Set Content Security Policy headers
-  app.use((req, res, next) => {
+  app.use((_req, res, next) => {
     res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' data:;");
     next();
   });
