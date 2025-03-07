@@ -41,6 +41,12 @@ const startApolloServer = async () => {
   // Middleware for parsing application/json
   app.use(express.json());
 
+  // Set Content Security Policy headers
+  app.use((req, res, next) => {
+    res.setHeader("Content-Security-Policy", "default-src 'self'; img-src 'self' data:;");
+    next();
+  });
+
   // Apply the Apollo middleware with context
   app.use(
     '/graphql',
