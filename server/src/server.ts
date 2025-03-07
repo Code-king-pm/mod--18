@@ -25,7 +25,7 @@ const startApolloServer = async () => {
   await server.start();
   await db;
 
-  const PORT = process.env.PORT || 3001;
+  const PORT = 4000; // Hardcode the port value here
   const app = express();
 
   app.use(
@@ -80,3 +80,5 @@ const startApolloServer = async () => {
 startApolloServer().catch(error => {
   console.error('Error starting the server:', error);
 });
+// Add logging to verify server startup
+console.log('Starting Apollo Server...');
